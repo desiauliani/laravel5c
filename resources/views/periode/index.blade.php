@@ -21,6 +21,14 @@
 
 @section('content')
     <div class="row">
+
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle me-1"></i> {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+            </div>
+        @endif
+
         <div class="col-md-12">
             <div class="card mb-4">
                 <div class="card-header">
@@ -30,11 +38,10 @@
                         </div>
                         <div class="col-12 col-md-8">
                             <div class="d-flex flex-wrap justify-content-md-end gap-2">
-                                <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
-                                    data-bs-target="#modal-add-user">
-                                    <i class="bi bi-plus-circle me-1" aria-hidden="true"> </i>
+                                <a href="{{ route('periode.create') }}" class="btn btn-sm btn-success">
+                                    <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
                                     Tambah Data
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -52,26 +59,38 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($semua_periode as $periode)
-                            <tr class="align-middle">
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $periode->periode }}</td>
-                                <td>{{ $periode->singkatan }}</td>
-                                <td>{{ $periode->status }}</td>
-                                <td class="text-end">
-                                    <div class="btn-group btn-group-sm">
-                                        <a href="{{ route('edit') }}" type="button" class="btn btn-outline-secondary"
-                                            aria-label="Edit Daniel Cooper">
-                                            <i class="bi bi-pencil" aria-hidden="true"> </i>
-                                        </a>
-                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
-                                            data-bs-target="#modal-delete-user" aria-label="Delete Daniel Cooper">
-                                            <i class="bi bi-trash" aria-hidden="true"> </i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
+                            @forelse ($semua_periode as $periode)
+                                <tr class="align-middle">
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $periode->periode }}</td>
+                                    <td>{{ $periode->singkatan }}</td>
+                                    <td>
+                                        @if ($periode->status)
+                                            <span class="badge text-bg-success">Aktif</span>
+                                        @else
+                                            <span class="badge text-bg-secondary">Tidak aktif</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ route('periode.edit', $periode) }}"
+                                                class="btn btn-outline-secondary" aria-label="Ubah {{ $periode->periode }}">
+                                                <i class="bi bi-pencil" aria-hidden="true"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
+                                                data-bs-target="#modal-hapus-{{ $periode->id }}"
+                                                aria-label="Hapus {{ $periode->periode }}">
+                                                <i class="bi bi-trash" aria-hidden="true"></i>
+                                            </button>
+                                            @include('periode.modal-hapus')
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="text-center text-secondary">Belum ada data periode.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
